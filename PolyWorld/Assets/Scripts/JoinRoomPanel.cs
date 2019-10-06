@@ -20,6 +20,7 @@ public class JoinRoomPanel : MonoBehaviour {
 
 	private NetworkPlayer net;
     public DebugPanel debugPanel;
+    public ItemPanel itemPanel;
     string roomName = "";
 	public virtual void Awake(){
 		net = GameObject.FindGameObjectWithTag ("Player").GetComponent<NetworkPlayer>();
@@ -191,7 +192,9 @@ public class JoinRoomPanel : MonoBehaviour {
 			//int count = 0;
 			float min = .9f;
 			float max = 1f;
-			for (i = firstGameOnList; i <lastGameOnList; i++) {
+            OpenGamesPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(0, -OpenGamesPanel.GetComponent<RectTransform>().rect.height);
+
+            for (i = firstGameOnList; i <lastGameOnList; i++) {
 				//if (!hostData [i].IsOpen)
 				//	continue; 
 
@@ -221,15 +224,18 @@ public class JoinRoomPanel : MonoBehaviour {
 				serverList.Add (obj);
                	//obj.GetComponent<JoinWorldButton>().map = customProp["map"].ToString();
                 obj.GetComponent<JoinWorldButton> ().Initiate(hostData [i].Name);
-				//obj.GetComponent<ServerMenuObject> ().roomOptions = roomOptions;
+                //obj.GetComponent<ServerMenuObject> ().roomOptions = roomOptions;
 
                 //Make button
-				obj.transform.SetParent (OpenGamesPanel.transform, false);
-				obj.transform.Find ("ServerText").GetComponent<Text> ().text = hostData [i].Name;
+                OpenGamesPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 128);
+
+                obj.transform.SetParent (OpenGamesPanel.transform, false);
+                obj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,-128 * i -128);
+
+                obj.transform.Find ("ServerText").GetComponent<Text> ().text = hostData [i].Name;
 				//obj.transform.Find ("MapText").GetComponent<Text> ().text = customProp["map"].ToString();
 				//obj.transform.Find ("PlayerText").GetComponent<Text> ().text = hostData [i].PlayerCount + "/" + hostData[i].MaxPlayers;
                 obj.transform.Find("PlayerText").GetComponent<Text>().text = hostData[i].PlayerCount.ToString() ;
-                
 
 
                 //            obj.GetComponent<RectTransform> ().anchorMin = new Vector2(.1f,min);

@@ -12,6 +12,7 @@ public class SearchPanel : MonoBehaviour
     List<GameObject> Buttons = new List<GameObject>();
     public InputField searchInput;
     PolySpawner spawner;
+    public ItemPanel itemPanel;
     private void Awake()
     {
         instance = this;
@@ -83,7 +84,7 @@ public class SearchPanel : MonoBehaviour
         foreach (PolyAsset asset in assets)
         {
             GameObject btn = Instantiate(ButtonPrefab, ContentPanel.position, ContentPanel.rotation, ContentPanel);
-            btn.GetComponent<AssetButton>().Initiate(asset);
+            btn.GetComponent<AssetButton>().Initiate(itemPanel,asset);
             Buttons.Add(btn);
 
         }
