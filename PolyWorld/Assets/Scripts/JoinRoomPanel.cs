@@ -19,7 +19,8 @@ public class JoinRoomPanel : MonoBehaviour {
 	public GameObject OpenGamesPanel;
 
 	private NetworkPlayer net;
-
+    public DebugPanel debugPanel;
+    string roomName = "";
 	public virtual void Awake(){
 		net = GameObject.FindGameObjectWithTag ("Player").GetComponent<NetworkPlayer>();
 		PhotonNetwork.autoJoinLobby = true;
@@ -43,8 +44,8 @@ public class JoinRoomPanel : MonoBehaviour {
         if (Input.GetKeyUp(KeyCode.J))
         {
             RoomOptions roomOptions = new RoomOptions() { isVisible = true, maxPlayers = 64 };
-
-            JoinRoomWorking("Test", roomOptions);
+            roomName = "TestRoomName";
+            JoinRoomWorking(roomName, roomOptions);
         }
 
 
@@ -71,18 +72,18 @@ public class JoinRoomPanel : MonoBehaviour {
 	}
     void OnCreatedRoom()
     {
-        Debug.Log("Room create succesfull");
+       // Debug.Log("Room create succesfull");
         //PhotonNetwork.LoadLevel(1);
+        debugPanel.Log("Room create succesfull");
 
     }
     void OnJoinedRoom()
     {
-        Debug.Log("Room join succesfull");
-
-        // PhotonNetwork.LoadLevel(1);
 
 
+        debugPanel.SetField(2, roomName);
 
+        debugPanel.Log("JoinRoomPanel: Room join succesfull");
     }
     //This works
     public void JoinRoomWorking(string server,RoomOptions options){
@@ -107,7 +108,7 @@ public class JoinRoomPanel : MonoBehaviour {
 			//Add them to room options
 			roomOptions.CustomRoomPropertiesForLobby = lobbyprops;
 			roomOptions.CustomRoomProperties = roomProps;
-	
+            roomName = server;
 			TypedLobby defaultLobby = new TypedLobby ("Lobby",LobbyType.Default);
 			PhotonNetwork.JoinOrCreateRoom(server, roomOptions, defaultLobby);
 			//Network.isMessageQueueRunning =false;
@@ -141,8 +142,9 @@ public class JoinRoomPanel : MonoBehaviour {
 			//Add them to room options
 			roomOptions.CustomRoomPropertiesForLobby = lobbyprops;
 			roomOptions.CustomRoomProperties = roomProps;
-	
-			//TypedLobby defaultLobby = new TypedLobby (options.CustomRoomProperties["map"].ToString(),LobbyType.Default);
+            roomName = server;
+
+            //TypedLobby defaultLobby = new TypedLobby (options.CustomRoomProperties["map"].ToString(),LobbyType.Default);
             TypedLobby defaultLobby = new TypedLobby("Lobby", LobbyType.Default);
 
             PhotonNetwork.JoinOrCreateRoom(server, roomOptions, defaultLobby);

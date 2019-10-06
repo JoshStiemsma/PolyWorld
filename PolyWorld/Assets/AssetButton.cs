@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using PolyToolkit;
-
+using UnityEngine.Networking;
 public class AssetButton : MonoBehaviour
 {
     public Text Title;
@@ -14,20 +14,42 @@ public class AssetButton : MonoBehaviour
     {
         asset = _asset;
         Title.text = asset.displayName;
+
+       
+        StartCoroutine(GetTexture(asset.thumbnail.url));
+
+        if (asset.thumbnailTexture != null)
+        {
+            Debug.Log("Adding thumbnail");
+
+            thumbTex = asset.thumbnailTexture;
+            thumbnail.sprite = Sprite.Create(thumbTex, new Rect(0.0f, 0.0f, thumbTex.width, thumbTex.height), new Vector2(0.5f, 0.5f), 100.0f);
+        }
     }
     public void OnClick()
     {
-        PolyApi.Import(asset, PolyImportOptions.Default(), ImportCallback);
+
+
+        ObjectManager.instance.SpawnObject(asset);
 
     }
-    void ImportCallback(PolyAsset asset, PolyStatusOr<PolyImportResult> result)
+
+
+
+    IEnumerator GetTexture(string url)
     {
-        if (!result.Ok)
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError || www.isHttpError)
         {
-            return;
+            Debug.Log(www.error);
         }
-        result.Value.gameObject.transform.position = new Vector3(1, 0, 0) ;
-        thumbTex = asset.thumbnailTexture;
-        thumbnail.sprite  = Sprite.Create(thumbTex, new Rect(0.0f, 0.0f, thumbTex.width, thumbTex.height), new Vector2(0.5f, 0.5f), 100.0f);
+        else
+        {
+            Texture thumbTex = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            thumbnail.sprite = Sprite.Create((Texture2D)thumbTex, new Rect(0.0f, 0.0f, thumbTex.width, thumbTex.height), new Vector2(0.5f, 0.5f), 100.0f);
+
+        }
     }
 }

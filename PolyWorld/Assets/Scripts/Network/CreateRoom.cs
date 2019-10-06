@@ -10,6 +10,7 @@ public class CreateRoom : MonoBehaviour {
     public InputField RoomNameInput;
     public GameObject connectPanel;
     bool connectPanelOn = true;
+    public DebugPanel debugPanel;
     private Text RoomName
     {
         get { return _roomName; }
@@ -24,6 +25,7 @@ public class CreateRoom : MonoBehaviour {
     private void Start()
     {
         //OnConnectedToMaster();
+        connectPanel.SetActive(true);
     }
     private void Update()
     {
@@ -31,29 +33,33 @@ public class CreateRoom : MonoBehaviour {
         {
             OnClick_Connect();
         }
-       // connectPanel.GetComponent<Image>().color = new Color(Random.Range(0,255), Random.Range(0, 255), Random.Range(0, 255)); ;
+
         if (PhotonNetwork.connected && connectPanelOn)
         {
-            Debug.Log("Connect");
+
+            debugPanel.Log("Connected");
 
             connectPanelOn = false;
             connectPanel.SetActive(connectPanelOn);
         }else if (!PhotonNetwork.connected && !connectPanelOn)
         {
-            Debug.Log("disconnect");
+
+            debugPanel.Log("Disonnected");
 
             connectPanelOn = true;
             connectPanel.SetActive(true);
         }
-        Debug.Log(PhotonNetwork.connected +"  " + connectPanelOn);
+        debugPanel.SetField(0,PhotonNetwork.connectionState.ToString());
+      //  Debug.Log(PhotonNetwork.connected +"  " + connectPanelOn);
 
     }
     public void OnClick_Connect()
     {
-        Debug.Log("Connect");
+        debugPanel.Log(" Attempt Connect...");
         PhotonNetwork.ConnectUsingSettings("0.0.0");
        PlayerNetwork.instance.PlayerName = "Josh " + Random.Range(0, 100);
 
+        debugPanel.SetField(1, "Lobby");
 
         TypedLobby defaultLobby = new TypedLobby("Lobby", LobbyType.Default);
 
@@ -65,8 +71,9 @@ public class CreateRoom : MonoBehaviour {
  
     void OnJoinedLobby()
     {
+        debugPanel.Log("Joined lobby");
 
-        Debug.Log("Joined lobby");
+       // Debug.Log("Joined lobby");
         //RoomOptions roomOptions = new RoomOptions() { isVisible = true, maxPlayers = 64 };
         //if (PhotonNetwork.JoinOrCreateRoom("TestRoom", roomOptions, TypedLobby.Default))
         //{
@@ -81,12 +88,12 @@ public class CreateRoom : MonoBehaviour {
 
     private void OnPhotonCreatRoomFailed(object[] codeAndMsg)
     {
-        Debug.Log("creat room failed with error: " + codeAndMsg[1]);
+        debugPanel.Log("creat room failed with error: " + codeAndMsg[1]);
 
     }
     void OnCreatedRoom()
     {
-        Debug.Log("Room create succesfull");
+        debugPanel.Log("Room create succesfull");
         //PhotonNetwork.LoadLevel(1);
 
     }

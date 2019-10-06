@@ -4,11 +4,13 @@ using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
+using UnityEngine.EventSystems;
 
 
 namespace Valve.VR.InteractionSystem
 {
-public class ControllerInteraction : MonoBehaviour {
+public class ControllerInteraction : MonoBehaviour, IPointerClickHandler
+    {
 	
 	private ControllerInteraction self;
 
@@ -36,7 +38,10 @@ public class ControllerInteraction : MonoBehaviour {
                 playerview = this.GetComponentInParent<PhotonView>();
            
         }
-
+        public void OnPointerClick(PointerEventData data)
+        {
+            Debug.Log("Test click");
+        }
         //list of colliders
 
         //Trigger to add and remove items from nearby items list
@@ -183,8 +188,11 @@ public class ControllerInteraction : MonoBehaviour {
 		bool found = false;
 		if (Physics.Raycast (r, out hit, float.MaxValue)) {
 			InteractableObject e = hit.collider.GetComponent<InteractableObject> ();
-			lastContact = hit.point;
-			if ((e != null || e != GrabbedItem) && e.Active) {
+            if(e== null)
+                  e = hit.collider.GetComponentInParent<InteractableObject>();
+            lastContact = hit.point;
+
+			if (e != null &&  e != GrabbedItem && e.Active) {
 				if (HighlightedObj == null) {
 					Highlight (e);
 				} else if (HighlightedObj != e) {
@@ -193,7 +201,7 @@ public class ControllerInteraction : MonoBehaviour {
 				}
 				found = true;
 				endpoint.SetActive (true);
-			} else if ((e == null || e == GrabbedItem) && HighlightedObj) {
+			} else if (e == null && e == GrabbedItem && HighlightedObj) {
 				Unhighlight ();
 			}
 			HitLocation = hit.point;

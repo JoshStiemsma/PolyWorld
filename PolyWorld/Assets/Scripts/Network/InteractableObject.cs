@@ -6,6 +6,7 @@ using Valve.VR;
 using Valve.VR.InteractionSystem;
 [System.Serializable]
 public class ControllerInteractionData{
+    
     public bool Grabbable = true;
 	public bool LockXAxis = false, LockYAxis = false, LockZAxis = false;
 	public bool LockRotation = false, ChildObject = false;
@@ -23,7 +24,7 @@ public class InteractableObject : MonoBehaviour {
 	public bool EstablishedInteractionPoint = false;
 	public Vector3 InteractionOffset;
 	public bool currentlyInteracting = false;
-	public ControllerInteractionData data;
+	public ControllerInteractionData data= new ControllerInteractionData();
 	public GameObject ColliderParent;
 	//Net stuff
 	public PhotonView view;
@@ -116,7 +117,7 @@ public class InteractableObject : MonoBehaviour {
                 rigidbody.useGravity = false;
                 rigidbody.isKinematic = true;
             }
-            // InteractionOffset = controller.gameObject.transform.position - transform.position;
+             InteractionOffset = controller.gameObject.transform.position - transform.position;
             interactionPoint = this.transform;
         }
     }

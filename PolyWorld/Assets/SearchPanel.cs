@@ -49,7 +49,7 @@ public class SearchPanel : MonoBehaviour
         // Order from best to worst.
         req.orderBy = PolyOrderBy.BEST;
         // Up to 20 results per page.
-        req.pageSize = 20;
+        req.pageSize = 10;
         // Send the request.
         PolyApi.ListAssets(req, MyCallback);
     }
