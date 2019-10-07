@@ -61,6 +61,9 @@ public class InteractableObject : MonoBehaviour {
     {
         if(textScript != null)
             textScript.AddText();
+
+
+
     }
     // Update is called once per frame
     public virtual void Update () {

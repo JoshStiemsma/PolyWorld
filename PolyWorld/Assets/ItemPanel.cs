@@ -37,14 +37,17 @@ public class ItemPanel : MonoBehaviour, IPanelController
     {
         if (!on)
         {
-            rTrans.anchorMax = new Vector2(1, 1);
-            rTrans.anchorMin = new Vector2(1, 0);
+              rTrans.anchorMax = new Vector2(1, 1);
+             rTrans.anchorMin = new Vector2(1, 0);
+            this.transform.localScale = Vector3.zero;
             Open = false;
         }
         else
         {
-            rTrans.anchorMax = new Vector2(1.5f, 1);
-            rTrans.anchorMin = new Vector2(1, 0);
+            this.transform.localScale = Vector3.one;
+
+              rTrans.anchorMax = new Vector2(1.5f, 1);
+             rTrans.anchorMin = new Vector2(1, 0);
             Open = true;
         }
     }

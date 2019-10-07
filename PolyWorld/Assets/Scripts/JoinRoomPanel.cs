@@ -20,7 +20,7 @@ public class JoinRoomPanel : MonoBehaviour {
 
 	private NetworkPlayer net;
     public DebugPanel debugPanel;
-    public ItemPanel itemPanel;
+
     string roomName = "";
 	public virtual void Awake(){
 		net = GameObject.FindGameObjectWithTag ("Player").GetComponent<NetworkPlayer>();

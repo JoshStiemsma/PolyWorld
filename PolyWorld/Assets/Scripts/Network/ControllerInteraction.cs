@@ -9,7 +9,7 @@ using UnityEngine.EventSystems;
 
 namespace Valve.VR.InteractionSystem
 {
-public class ControllerInteraction : MonoBehaviour, IPointerClickHandler
+public class ControllerInteraction : MonoBehaviour, IPointerClickHandler, IPointerDownHandler
     {
 	
 	private ControllerInteraction self;
@@ -41,6 +41,11 @@ public class ControllerInteraction : MonoBehaviour, IPointerClickHandler
         public void OnPointerClick(PointerEventData data)
         {
             Debug.Log("Test click");
+        }
+       public void OnPointerDown(PointerEventData data)
+        {
+            Debug.Log("OnPointerDown: " + data.pointerCurrentRaycast.gameObject.name);
+
         }
         //list of colliders
 
@@ -81,6 +86,7 @@ public class ControllerInteraction : MonoBehaviour, IPointerClickHandler
 
         public void OnTriggerDown(){
             if (HighlightedObj!=null) HighlightedObj.LaserClick();
+            GraphicsRaycast();
 
             if (GrabbedItem==null){
 			    GrabNearestItem ();
@@ -181,8 +187,44 @@ public class ControllerInteraction : MonoBehaviour, IPointerClickHandler
             if (input.TriggerRelease) OnTriggerUp();
     }
 
+        void GraphicsRaycast()
+        {
+            // Example: get controller's current orientation:
+            Quaternion ori = this.transform.rotation;
 
-    void Raycast(){
+            // If you want a vector that points in the direction of the controller
+            // you can just multiply this quat by Vector3.forward:
+            Vector3 vector = ori * Vector3.forward;
+
+
+
+
+            // Do something.
+            // TouchDown is true for 1 frame after touchpad is touched.
+
+            PointerEventData pointerData = new PointerEventData(EventSystem.current);
+
+            pointerData.position = this.transform.position; // use the position from controller as start of raycast instead of mousePosition.
+
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerData, results);
+            Debug.DrawRay(this.transform.position, transform.forward, Color.red, 10f);
+            Debug.Log("graphics click");
+            if (results.Count > 0)
+            {
+                //WorldUI is my layer name
+                if (results[0].gameObject.layer == LayerMask.NameToLayer("UI"))
+                {
+                    string dbg = "Root Element: {0} \n GrandChild Element: {1}";
+                    Debug.Log(string.Format(dbg, results[results.Count - 1].gameObject.name, results[0].gameObject.name));
+                    //Debug.Log("Root Element: "+results[results.Count-1].gameObject.name);
+                    //Debug.Log("GrandChild Element: "+results[0].gameObject.name);
+
+                }
+
+            }
+        }
+        void Raycast(){
 		Ray r = new Ray (this.transform.position, this.transform.forward);
 		RaycastHit hit;
 		bool found = false;
