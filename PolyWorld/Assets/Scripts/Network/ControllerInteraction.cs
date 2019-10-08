@@ -16,7 +16,9 @@ public class ControllerInteraction : MonoBehaviour, IPointerClickHandler, IPoint
 
 	private InteractableObject HighlightedObj;
 	public InteractableObject GrabbedItem;
-	private InteractableObject closestItem;
+    public InteractableObject LaserGrabbedItem;
+
+        private InteractableObject closestItem;
 
 	public Vector3 HitLocation,lastContact;
 	public GameObject endpoint;
@@ -83,9 +85,14 @@ public class ControllerInteraction : MonoBehaviour, IPointerClickHandler, IPoint
 
 
 
-
+        public Transform LaserHoldLocation;
         public void OnTriggerDown(){
-            if (HighlightedObj!=null) HighlightedObj.LaserClick();
+            if (HighlightedObj != null)
+            {
+                LaserHoldLocation.position = HighlightedObj.transform.position;
+                LaserGrabbedItem = HighlightedObj;
+                LaserGrabbedItem.LaserGrab(this);
+            }
             GraphicsRaycast();
 
             if (GrabbedItem==null){
@@ -98,6 +105,12 @@ public class ControllerInteraction : MonoBehaviour, IPointerClickHandler, IPoint
     	    if(GrabbedItem!=null && !GrabbedItem.getStickToHand()){
 			    DropItem ();
 		    }
+            if(LaserGrabbedItem != null)
+            {
+                LaserGrabbedItem.LaserUngrab();
+
+                LaserGrabbedItem = null;
+            }
         }
 /////////////////////////////////////////////////////////////////////
 
@@ -180,6 +193,7 @@ public class ControllerInteraction : MonoBehaviour, IPointerClickHandler, IPoint
 	}
     void Update(){
             Raycast();
+            GraphicsRaycast();
             //if(GrabbedItem != null)CheckReleaseDistance();
 
             if (input.TriggerPress) OnTriggerDown();
@@ -191,29 +205,36 @@ public class ControllerInteraction : MonoBehaviour, IPointerClickHandler, IPoint
         {
             // Example: get controller's current orientation:
             Quaternion ori = this.transform.rotation;
-
-            // If you want a vector that points in the direction of the controller
-            // you can just multiply this quat by Vector3.forward:
             Vector3 vector = ori * Vector3.forward;
-
-
-
-
-            // Do something.
-            // TouchDown is true for 1 frame after touchpad is touched.
+            
 
             PointerEventData pointerData = new PointerEventData(EventSystem.current);
 
-            pointerData.position = this.transform.position; // use the position from controller as start of raycast instead of mousePosition.
+            pointerData.position = vector; // use the position from controller as start of raycast instead of mousePosition.
+            
 
             List<RaycastResult> results = new List<RaycastResult>();
             EventSystem.current.RaycastAll(pointerData, results);
-            Debug.DrawRay(this.transform.position, transform.forward, Color.red, 10f);
-            Debug.Log("graphics click");
-            if (results.Count > 0)
+
+
+            Ray r = new Ray(this.transform.position, this.transform.forward);
+            RaycastHit[] hits = Physics.RaycastAll(this.transform.position, this.transform.forward, float.MaxValue);
+
+            foreach (RaycastHit result in hits)
+            {
+                Debug.Log("graphics Raycast " + result.collider.gameObject.name);
+
+            }
+
+
+
+            // Debug.DrawRay(this.transform.position, transform.forward, Color.green, 10f);
+            foreach (RaycastResult result in results)
             {
                 //WorldUI is my layer name
-                if (results[0].gameObject.layer == LayerMask.NameToLayer("UI"))
+                Debug.Log("graphics Raycast " + result.gameObject.name);
+
+                if (result.gameObject.layer == LayerMask.NameToLayer("UI"))
                 {
                     string dbg = "Root Element: {0} \n GrandChild Element: {1}";
                     Debug.Log(string.Format(dbg, results[results.Count - 1].gameObject.name, results[0].gameObject.name));
@@ -224,11 +245,12 @@ public class ControllerInteraction : MonoBehaviour, IPointerClickHandler, IPoint
 
             }
         }
-        void Raycast(){
+   void Raycast(){
 		Ray r = new Ray (this.transform.position, this.transform.forward);
 		RaycastHit hit;
 		bool found = false;
 		if (Physics.Raycast (r, out hit, float.MaxValue)) {
+               Debug.Log("Raycast " + hit.collider.gameObject.name);
 			InteractableObject e = hit.collider.GetComponent<InteractableObject> ();
             if(e== null)
                   e = hit.collider.GetComponentInParent<InteractableObject>();

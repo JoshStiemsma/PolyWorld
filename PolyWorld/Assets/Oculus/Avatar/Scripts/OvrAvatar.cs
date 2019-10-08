@@ -7,7 +7,7 @@ using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using UnityEngine.Events;
+
 #if AVATAR_INTERNAL
 using UnityEngine.Events;
 #endif
@@ -175,10 +175,10 @@ public class OvrAvatar : MonoBehaviour
     internal OvrAvatarHand HandRight = null;
     internal ovrAvatarLookAndFeelVersion LookAndFeelVersion = ovrAvatarLookAndFeelVersion.Two;
     internal ovrAvatarLookAndFeelVersion FallbackLookAndFeelVersion = ovrAvatarLookAndFeelVersion.One;
-
-    //public AvatarControllerBlend BlendController;
+#if AVATAR_INTERNAL
+    public AvatarControllerBlend BlendController;
     public UnityEvent AssetsDoneLoading = new UnityEvent();
-
+#endif
 
     // Avatar packets
     public class PacketEventArgs : EventArgs
@@ -657,9 +657,9 @@ public class OvrAvatar : MonoBehaviour
             if (!assetsFinishedLoading)
             {
                 BuildRenderComponents();
-
+#if AVATAR_INTERNAL
                 AssetsDoneLoading.Invoke();
-
+#endif
                 InitPostLoad();
                 assetsFinishedLoading = true;
                 OvrAvatarSDKManager.Instance.RemoveLoadingAvatar(GetInstanceID());
